@@ -1,6 +1,6 @@
-# FreshMart Online Gudang
+# FreshMart Online Warehouse
 
-**FreshMart Online Gudang** adalah aplikasi internal untuk mengelola stok barang pada bisnis fiksi **FreshMart Online**. Aplikasi ini dibuat menggunakan bahasa pemrograman **Go (Golang)** sebagai bagian dari _Tugas Besar Algoritma dan Pemrograman 2 (Alpro2)_.
+**FreshMart Online Warehouse** adalah aplikasi internal untuk mengelola stok barang pada bisnis fiksi **FreshMart Online**. Aplikasi ini dibuat menggunakan bahasa pemrograman **Go (Golang)** sebagai bagian dari _Tugas Besar Algoritma dan Pemrograman 2 (Alpro2)_.
 
 FreshMart Online pertama kali dikembangkan dalam _Tugas Besar Permodelan Basis Data_ dan dilanjutkan dalam Alpro2 sebagai aplikasi manajemen stok sederhana 
 
