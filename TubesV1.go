@@ -1,9 +1,7 @@
 package main
-
 import "fmt"
 
 const MAX = 200
-
 type Produk struct {
 	ID             string
 	Nama           string
