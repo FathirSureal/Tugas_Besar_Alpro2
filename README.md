@@ -1,3 +1,5 @@
+![FreshMart Online Logo](./freshmartonlinewarehouse.png)
+
 # FreshMart Online Warehouse
 
 **FreshMart Online Warehouse** adalah aplikasi internal untuk mengelola stok barang pada bisnis fiksi **FreshMart Online**. Aplikasi ini dibuat menggunakan bahasa pemrograman **Go (Golang)** sebagai bagian dari _Tugas Besar Algoritma dan Pemrograman 2 (Alpro2)_.
