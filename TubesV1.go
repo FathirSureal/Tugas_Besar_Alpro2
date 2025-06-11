@@ -5,23 +5,33 @@ import "fmt"
 const MAX = 200
 
 type Produk struct {
-	ID             string
-	Nama           string
-	Kategori       string
-	Stok           int
-	UmurSimpanHari int
+	ID       string
+	Nama     string
+	Kategori string
+	Stok     int
+}
+
+type Pemasok struct {
+	Nama   string
+	Kontak string
+	Alamat string
+}
+
+type Storage struct {
 	LokasiRak      string
+	UmurSimpanHari int
 	TanggalMasuk   string
 }
 
 var daftarProduk [MAX]Produk
-var jumlahProduk int = 0
-var kategoriList = [10]string{"Buah", "Sayur", "Daging", "Ikan", "Susu", "Roti", "Minuman", "Bumbu", "Frozen", "Snack"}
+var daftarStorage [MAX]Storage
+var daftarPemasok [MAX]Pemasok
+var jumlahProduk int
+var jumlahLog int
 var logMasuk [100]string
-var jumlahLog int = 0
+
+var kategoriList = [10]string{"Buah", "Sayur", "Daging", "Ikan", "Susu", "Roti", "Minuman", "Bumbu", "Frozen", "Snack"}
 var lokasiRakList = [10]string{"A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "E1", "E2"}
-var tanggalMasukList [MAX]string
-var namaProdukList [MAX]string
 
 func TampilkanPilihan(label string, daftar [10]string) {
 	fmt.Println("Pilihan", label, ":")
@@ -36,59 +46,132 @@ func TambahProduk() {
 		return
 	}
 	var p Produk
+	var s Storage
+	var ps Pemasok
+
 	fmt.Print("Masukkan ID produk: ")
 	fmt.Scan(&p.ID)
 	fmt.Print("Masukkan nama produk: ")
 	fmt.Scan(&p.Nama)
+
 	TampilkanPilihan("Kategori", kategoriList)
 	var pilihanKategori int
-	fmt.Print("Masukkan nomor kategori: ")
 	fmt.Scan(&pilihanKategori)
-	switch pilihanKategori {
-	case 1, 2, 3, 4, 5, 6, 7, 8, 9, 10:
-		p.Kategori = kategoriList[pilihanKategori-1]
-	default:
-		fmt.Println("Kategori tidak valid. Produk batal ditambahkan.")
+	if pilihanKategori < 1 || pilihanKategori > 10 {
+		fmt.Println("Kategori tidak valid.")
 		return
 	}
+	p.Kategori = kategoriList[pilihanKategori-1]
+
 	fmt.Print("Masukkan stok: ")
 	fmt.Scan(&p.Stok)
+
 	fmt.Print("Masukkan umur simpan (hari): ")
-	fmt.Scan(&p.UmurSimpanHari)
+	fmt.Scan(&s.UmurSimpanHari)
+
 	TampilkanPilihan("Rak Penyimpanan", lokasiRakList)
 	var pilihanRak int
-	fmt.Print("Masukkan nomor rak: ")
 	fmt.Scan(&pilihanRak)
-
-	switch pilihanRak {
-	case 1, 2, 3, 4, 5, 6, 7, 8, 9, 10:
-		p.LokasiRak = lokasiRakList[pilihanRak-1]
-	default:
-		fmt.Println("Lokasi rak tidak valid. Produk batal ditambahkan.")
+	if pilihanRak < 1 || pilihanRak > 10 {
+		fmt.Println("Lokasi rak tidak valid.")
 		return
 	}
+	s.LokasiRak = lokasiRakList[pilihanRak-1]
+
 	fmt.Print("Masukkan tanggal masuk (DD-MM-YYYY): ")
-	fmt.Scan(&p.TanggalMasuk)
+	fmt.Scan(&s.TanggalMasuk)
+
+	fmt.Print("Masukkan nama pemasok: ")
+	fmt.Scan(&ps.Nama)
+	fmt.Print("Masukkan kontak pemasok: ")
+	fmt.Scan(&ps.Kontak)
+	fmt.Print("Masukkan alamat pemasok: ")
+	fmt.Scan(&ps.Alamat)
+
 	daftarProduk[jumlahProduk] = p
-	tanggalMasukList[jumlahProduk] = p.TanggalMasuk
-	namaProdukList[jumlahProduk] = p.Nama
-	jumlahProduk++
-	if jumlahLog < 100 {
-		logMasuk[jumlahLog] = "Tambah produk " + p.Nama + " (" + p.ID + ")"
+	daftarStorage[jumlahProduk] = s
+	daftarPemasok[jumlahProduk] = ps
+
+	if jumlahLog < len(logMasuk) {
+		logMasuk[jumlahLog] = fmt.Sprintf("Tambah produk %s (%s)", p.Nama, p.ID)
 		jumlahLog++
 	}
-	fmt.Println("Produk berhasil ditambahkan!")
+
+	jumlahProduk++
+	fmt.Println("Produk dan pemasok berhasil ditambahkan!")
 }
 
-func TampilkanProduk() {
-	if jumlahProduk == 0 {
-		fmt.Println("Belum ada produk.")
-		return
-	}
-	fmt.Println("Daftar Produk:")
-	for i := 0; i < jumlahProduk; i++ {
-		p := daftarProduk[i]
-		fmt.Printf("%d. [%s] %s - %s | Stok: %d | Umur Simpan: %d hari | Rak: %s | Masuk: %s\n", i+1, p.ID, p.Nama, p.Kategori, p.Stok, p.UmurSimpanHari, p.LokasiRak, p.TanggalMasuk)
+func TampilkanProduk(i int) {
+	p := daftarProduk[i]
+	s := daftarStorage[i]
+	ps := daftarPemasok[i]
+	fmt.Printf("\n[%s] %s - %s\n", p.ID, p.Nama, p.Kategori)
+	fmt.Printf("Stok         : %d\n", p.Stok)
+	fmt.Printf("Umur Simpan  : %d hari\n", s.UmurSimpanHari)
+	fmt.Printf("Lokasi Rak   : %s\n", s.LokasiRak)
+	fmt.Printf("Tanggal Masuk: %s\n", s.TanggalMasuk)
+	fmt.Printf("Pemasok      : %s | %s | %s\n", ps.Nama, ps.Kontak, ps.Alamat)
+}
+func MenuPencarian() {
+	var pilihan int
+	for pilihan != 8 {
+		fmt.Println("\n--- Menu Pencarian Produk ---")
+		fmt.Println("1. Cari by ID (Sequential Search)")
+		fmt.Println("2. Cari by Nama (Binary Search)")
+		fmt.Println("3. Cari by Prefix Nama (Binary Search)")
+		fmt.Println("4. Cari by Nama Pemasok")
+		fmt.Println("5. Cari by Kategori")
+		fmt.Println("6. Cari by Tanggal Masuk")
+		fmt.Println("7. Cari by Lokasi Rak")
+		fmt.Println("8. Kembali ke Menu Utama")
+		fmt.Print("Pilih jenis pencarian: ")
+		fmt.Scan(&pilihan)
+
+		switch pilihan {
+		case 1:
+			var id string
+			fmt.Print("Masukkan ID: ")
+			fmt.Scan(&id)
+			if idx := SeqSearchCariProdukByID(id); idx != -1 {
+				TampilkanProduk(idx)
+			} else {
+				fmt.Println("Produk tidak ditemukan.")
+			}
+		case 2:
+			InsertionSortByNama(true)
+			var nama string
+			fmt.Print("Masukkan nama: ")
+			fmt.Scan(&nama)
+			if idx := BinarySearchByNama(nama); idx != -1 {
+				TampilkanProduk(idx)
+			} else {
+				fmt.Println("Produk tidak ditemukan.")
+			}
+		case 3:
+			fmt.Print("Masukkan awalan nama: ")
+			var pref string
+			fmt.Scan(&pref)
+			ids := BinarySearchByPrefixNama(pref)
+			if len(ids) == 0 {
+				fmt.Println("Tidak ditemukan.")
+			} else {
+				for _, i := range ids {
+					TampilkanProduk(i)
+				}
+			}
+		case 4:
+			CariProdukByPemasok()
+		case 5:
+			CariProdukByKategori()
+		case 6:
+			CariProdukByTanggalMasuk()
+		case 7:
+			CariProdukByLokasiRak()
+		case 8:
+			fmt.Println("Kembali ke menu utama...")
+		default:
+			fmt.Println("Pilihan tidak valid.")
+		}
 	}
 }
 
@@ -101,93 +184,148 @@ func SeqSearchCariProdukByID(id string) int {
 	return -1
 }
 
+func InsertionSortByNama(asc bool) {
+	for i := 1; i < jumlahProduk; i++ {
+		keyP := daftarProduk[i]
+		keyS := daftarStorage[i]
+		j := i - 1
+		for j >= 0 && ((asc && daftarProduk[j].Nama > keyP.Nama) || (!asc && daftarProduk[j].Nama < keyP.Nama)) {
+			daftarProduk[j+1] = daftarProduk[j]
+			daftarStorage[j+1] = daftarStorage[j]
+			j--
+		}
+		daftarProduk[j+1] = keyP
+		daftarStorage[j+1] = keyS
+	}
+}
+
 func BinarySearchByNama(nama string) int {
-	kiri := 0
-	kanan := jumlahProduk - 1
-	for kiri <= kanan {
-		tengah := (kiri + kanan) / 2
-		if daftarProduk[tengah].Nama == nama {
-			return tengah
-		} else if daftarProduk[tengah].Nama < nama {
-			kiri = tengah + 1
+	InsertionSortByNama(true)
+	low, high := 0, jumlahProduk-1
+	for low <= high {
+		mid := (low + high) / 2
+		if daftarProduk[mid].Nama == nama {
+			return mid
+		} else if daftarProduk[mid].Nama < nama {
+			low = mid + 1
 		} else {
-			kanan = tengah - 1
+			high = mid - 1
 		}
 	}
 	return -1
 }
-func BinarySearchByPrefixNama(prefix string) []Produk {
+
+func BinarySearchByPrefixNama(prefix string) []int {
 	InsertionSortByNama(true)
-	hasil := []Produk{}
-	kiri := 0
-	kanan := jumlahProduk - 1
-	tengah := -1
-	for kiri <= kanan && tengah == -1 {
-		mid := (kiri + kanan) / 2
-		nama := daftarProduk[mid].Nama
-		if len(nama) >= len(prefix) && nama[:len(prefix)] == prefix {
-			tengah = mid
-		}
-		if nama < prefix {
-			kiri = mid + 1
-		} else if nama > prefix {
-			kanan = mid - 1
+	hasilIdx := []int{}
+	low, high := 0, jumlahProduk-1
+	var mid int
+	found := false
+	for low <= high && !found {
+		mid = (low + high) / 2
+		nm := daftarProduk[mid].Nama
+		if len(nm) >= len(prefix) && nm[:len(prefix)] == prefix {
+			found = true
+		} else if nm < prefix {
+			low = mid + 1
+		} else {
+			high = mid - 1
 		}
 	}
-	if tengah == -1 {
-		return hasil
+	if !found {
+		return hasilIdx
 	}
-	i := tengah
-	for i >= 0 && len(daftarProduk[i].Nama) >= len(prefix) &&
-		daftarProduk[i].Nama[:len(prefix)] == prefix {
+	i := mid
+	for i >= 0 && len(daftarProduk[i].Nama) >= len(prefix) && daftarProduk[i].Nama[:len(prefix)] == prefix {
 		i--
 	}
 	i++
-	for i < jumlahProduk && len(daftarProduk[i].Nama) >= len(prefix) &&
-		daftarProduk[i].Nama[:len(prefix)] == prefix {
-		hasil = append(hasil, daftarProduk[i])
+	for i < jumlahProduk && len(daftarProduk[i].Nama) >= len(prefix) && daftarProduk[i].Nama[:len(prefix)] == prefix {
+		hasilIdx = append(hasilIdx, i)
 		i++
 	}
-
-	return hasil
+	return hasilIdx
 }
 
-func InsertionSortByNama(ascending bool) {
-	for i := 1; i < jumlahProduk; i++ {
-		key := daftarProduk[i]
-		j := i - 1
-		for j >= 0 && ((ascending && daftarProduk[j].Nama > key.Nama) || (!ascending && daftarProduk[j].Nama < key.Nama)) {
-			daftarProduk[j+1] = daftarProduk[j]
-			j--
-		}
-		daftarProduk[j+1] = key
-	}
-}
-
-func SelectionSortUrutkanByUmurSimpan(ascending bool) {
+func SelectionSortByUmur(asc bool) {
 	for i := 0; i < jumlahProduk-1; i++ {
 		idx := i
 		for j := i + 1; j < jumlahProduk; j++ {
-			if (ascending && daftarProduk[j].UmurSimpanHari < daftarProduk[idx].UmurSimpanHari) ||
-				(!ascending && daftarProduk[j].UmurSimpanHari > daftarProduk[idx].UmurSimpanHari) {
+			if (asc && daftarStorage[j].UmurSimpanHari < daftarStorage[idx].UmurSimpanHari) ||
+				(!asc && daftarStorage[j].UmurSimpanHari > daftarStorage[idx].UmurSimpanHari) {
 				idx = j
 			}
 		}
-		if idx != i {
-			daftarProduk[i], daftarProduk[idx] = daftarProduk[idx], daftarProduk[i]
-		}
+		daftarProduk[i], daftarProduk[idx] = daftarProduk[idx], daftarProduk[i]
+		daftarStorage[i], daftarStorage[idx] = daftarStorage[idx], daftarStorage[i]
 	}
 }
 
-func InsertionSortUrutkanByKategori(ascending bool) {
+func InsertionSortByKategori(asc bool) {
 	for i := 1; i < jumlahProduk; i++ {
-		key := daftarProduk[i]
+		keyP := daftarProduk[i]
+		keyS := daftarStorage[i]
 		j := i - 1
-		for j >= 0 && ((ascending && daftarProduk[j].Kategori > key.Kategori) || (!ascending && daftarProduk[j].Kategori < key.Kategori)) {
+		for j >= 0 && ((asc && daftarProduk[j].Kategori > keyP.Kategori) || (!asc && daftarProduk[j].Kategori < keyP.Kategori)) {
 			daftarProduk[j+1] = daftarProduk[j]
+			daftarStorage[j+1] = daftarStorage[j]
 			j--
 		}
-		daftarProduk[j+1] = key
+		daftarProduk[j+1] = keyP
+		daftarStorage[j+1] = keyS
+	}
+}
+func InsertionSortByID(asc bool) {
+	for i := 1; i < jumlahProduk; i++ {
+		keyP := daftarProduk[i]
+		keyS := daftarStorage[i]
+		keyPS := daftarPemasok[i]
+		j := i - 1
+		for j >= 0 && ((asc && daftarProduk[j].ID > keyP.ID) || (!asc && daftarProduk[j].ID < keyP.ID)) {
+			daftarProduk[j+1] = daftarProduk[j]
+			daftarStorage[j+1] = daftarStorage[j]
+			daftarPemasok[j+1] = daftarPemasok[j]
+			j--
+		}
+		daftarProduk[j+1] = keyP
+		daftarStorage[j+1] = keyS
+		daftarPemasok[j+1] = keyPS
+	}
+}
+
+func InsertionSortByRak(asc bool) {
+	for i := 1; i < jumlahProduk; i++ {
+		keyP := daftarProduk[i]
+		keyS := daftarStorage[i]
+		keyPS := daftarPemasok[i]
+		j := i - 1
+		for j >= 0 && ((asc && daftarStorage[j].LokasiRak > keyS.LokasiRak) || (!asc && daftarStorage[j].LokasiRak < keyS.LokasiRak)) {
+			daftarProduk[j+1] = daftarProduk[j]
+			daftarStorage[j+1] = daftarStorage[j]
+			daftarPemasok[j+1] = daftarPemasok[j]
+			j--
+		}
+		daftarProduk[j+1] = keyP
+		daftarStorage[j+1] = keyS
+		daftarPemasok[j+1] = keyPS
+	}
+}
+
+func InsertionSortByTanggalMasuk(asc bool) {
+	for i := 1; i < jumlahProduk; i++ {
+		keyP := daftarProduk[i]
+		keyS := daftarStorage[i]
+		keyPS := daftarPemasok[i]
+		j := i - 1
+		for j >= 0 && ((asc && daftarStorage[j].TanggalMasuk > keyS.TanggalMasuk) || (!asc && daftarStorage[j].TanggalMasuk < keyS.TanggalMasuk)) {
+			daftarProduk[j+1] = daftarProduk[j]
+			daftarStorage[j+1] = daftarStorage[j]
+			daftarPemasok[j+1] = daftarPemasok[j]
+			j--
+		}
+		daftarProduk[j+1] = keyP
+		daftarStorage[j+1] = keyS
+		daftarPemasok[j+1] = keyPS
 	}
 }
 
@@ -198,22 +336,7 @@ func CetakLog() {
 	}
 }
 
-func EditStokProduk() {
-	var id string
-	fmt.Print("Masukkan ID produk yang ingin diubah stoknya: ")
-	fmt.Scan(&id)
-	idx := SeqSearchCariProdukByID(id)
-	if idx == -1 {
-		fmt.Println("Produk tidak ditemukan.")
-		return
-	}
-	fmt.Printf("Stok lama: %d\n", daftarProduk[idx].Stok)
-	fmt.Print("Masukkan stok baru: ")
-	fmt.Scan(&daftarProduk[idx].Stok)
-	fmt.Println("Stok berhasil diubah.")
-}
-
-func EditDataProduk() {
+func EditProduk() {
 	var id string
 	fmt.Print("Masukkan ID produk yang ingin diedit: ")
 	fmt.Scan(&id)
@@ -222,88 +345,69 @@ func EditDataProduk() {
 		fmt.Println("Produk tidak ditemukan.")
 		return
 	}
-	fmt.Println("Data saat ini:")
-	fmt.Printf("ID: %s\n", daftarProduk[idx].ID)
-	fmt.Printf("Nama: %s\n", daftarProduk[idx].Nama)
-	fmt.Printf("Kategori: %s\n", daftarProduk[idx].Kategori)
 
-	fmt.Print("Masukkan ID baru (tekan '-' untuk lewati): ")
-	var newID string
-	fmt.Scan(&newID)
-	if newID != "-" {
-		daftarProduk[idx].ID = newID
-	}
-	fmt.Print("Masukkan Nama baru (tekan '-' untuk lewati): ")
-	var newNama string
-	fmt.Scan(&newNama)
-	if newNama != "-" {
-		daftarProduk[idx].Nama = newNama
-		namaProdukList[idx] = newNama
-	}
-	TampilkanPilihan("Kategori", kategoriList)
-	fmt.Print("Masukkan Kategori baru (tekan '-' untuk lewati): ")
-	var newKategori string
-	fmt.Scan(&newKategori)
-	if newKategori != "-" {
-		daftarProduk[idx].Kategori = newKategori
-	}
-	fmt.Println("Data produk berhasil diperbarui.")
-}
+	for {
+		fmt.Println("\nEdit Data Produk:")
+		fmt.Println("1. Nama Produk")
+		fmt.Println("2. Kategori")
+		fmt.Println("3. Stok")
+		fmt.Println("4. Umur Simpan")
+		fmt.Println("5. Lokasi Rak")
+		fmt.Println("6. Tanggal Masuk")
+		fmt.Println("7. Nama Pemasok")
+		fmt.Println("8. Kontak Pemasok")
+		fmt.Println("9. Alamat Pemasok")
+		fmt.Println("0. Selesai Edit")
+		fmt.Print("Pilih yang ingin diedit: ")
 
-func IsiDataDummy() {
-	data := []Produk{
-		{"P001", "Apel_Fuji", "Buah", 100, 14, "A1", "01-06-2025"},
-		{"P002", "Bayam_Segar", "Sayur", 50, 5, "A2", "02-06-2025"},
-		{"P003", "Daging_Sapi", "Daging", 30, 7, "B1", "03-06-2025"},
-		{"P004", "Ikan_Salmon", "Ikan", 40, 6, "B2", "03-06-2025"},
-		{"P005", "Susu_UHT", "Susu", 80, 30, "C1", "04-06-2025"},
-		{"P006", "Roti_Tawar", "Roti", 60, 3, "C2", "04-06-2025"},
-		{"P007", "Teh_Botol", "Minuman", 120, 60, "D1", "05-06-2025"},
-		{"P008", "Kecap_Manis", "Bumbu", 45, 180, "D2", "05-06-2025"},
-		{"P009", "Nugget_Ayam", "Frozen", 55, 90, "E1", "06-06-2025"},
-		{"P010", "Keripik_Singkong", "Snack", 70, 150, "E2", "06-06-2025"},
-		{"P011", "Jeruk_Mandarin", "Buah", 90, 10, "A1", "07-06-2025"},
-		{"P012", "Wortel_Organik", "Sayur", 65, 8, "A2", "07-06-2025"},
-		{"P013", "Daging_Kambing", "Daging", 20, 5, "B1", "08-06-2025"},
-		{"P014", "Ikan_Tuna", "Ikan", 35, 6, "B2", "08-06-2025"},
-		{"P015", "Susu_Kedelai", "Susu", 40, 20, "C1", "09-06-2025"},
-		{"P016", "Roti_Gandum", "Roti", 30, 4, "C2", "09-06-2025"},
-		{"P017", "Jus_Apel", "Minuman", 100, 14, "D1", "10-06-2025"},
-		{"P018", "Saus_Tomat", "Bumbu", 38, 120, "D2", "10-06-2025"},
-		{"P019", "Sosis_Sapi", "Frozen", 25, 60, "E1", "11-06-2025"},
-		{"P020", "Cokelat_Batang", "Snack", 95, 180, "E2", "11-06-2025"},
-		{"P021", "Pisang_Cavendish", "Buah", 70, 7, "A1", "12-06-2025"},
-		{"P022", "Kangkung", "Sayur", 60, 4, "A2", "12-06-2025"},
-		{"P023", "Daging_Cincang", "Daging", 28, 5, "B1", "13-06-2025"},
-		{"P024", "Ikan_Nila", "Ikan", 50, 4, "B2", "13-06-2025"},
-		{"P025", "Susu_Skimming", "Susu", 55, 25, "C1", "14-06-2025"},
-		{"P026", "Roti_Sobek", "Roti", 42, 2, "C2", "14-06-2025"},
-		{"P027", "Air_Mineral", "Minuman", 150, 365, "D1", "15-06-2025"},
-		{"P028", "Garam_Dapur", "Bumbu", 80, 730, "D2", "15-06-2025"},
-		{"P029", "Dimsum_Ayam", "Frozen", 60, 45, "E1", "16-06-2025"},
-		{"P030", "Kacang_Garing", "Snack", 85, 180, "E2", "16-06-2025"},
-		{"P031", "Mangga_Manalagi", "Buah", 50, 9, "A1", "17-06-2025"},
-		{"P032", "Tomat_Merah", "Sayur", 75, 6, "A2", "17-06-2025"},
-		{"P033", "Daging_Bebek", "Daging", 18, 5, "B1", "18-06-2025"},
-		{"P034", "Ikan_Gurame", "Ikan", 33, 5, "B2", "18-06-2025"},
-		{"P035", "Susu_Cokelat", "Susu", 48, 15, "C1", "19-06-2025"},
-		{"P036", "Roti_Keju", "Roti", 28, 3, "C2", "19-06-2025"},
-		{"P037", "Minuman_Soda", "Minuman", 110, 180, "D1", "20-06-2025"},
-		{"P038", "Merica_Bubuk", "Bumbu", 22, 365, "D2", "20-06-2025"},
-		{"P039", "Bakso_Ikan", "Frozen", 36, 60, "E1", "21-06-2025"},
-		{"P040", "Permen_Karet", "Snack", 200, 365, "E2", "21-06-2025"},
-	}
-	for _, p := range data {
-		daftarProduk[jumlahProduk] = p
-		tanggalMasukList[jumlahProduk] = p.TanggalMasuk
-		namaProdukList[jumlahProduk] = p.Nama
-		jumlahProduk++
-		if jumlahLog < 100 {
-			logMasuk[jumlahLog] = "Tambah produk " + p.Nama + " (" + p.ID + ")"
+		var pilihan int
+		fmt.Scan(&pilihan)
+
+		switch pilihan {
+		case 1:
+			fmt.Print("Nama baru: ")
+			fmt.Scan(&daftarProduk[idx].Nama)
+		case 2:
+			TampilkanPilihan("Kategori", kategoriList)
+			var pilihanKategori int
+			fmt.Scan(&pilihanKategori)
+			if pilihanKategori >= 1 && pilihanKategori <= 10 {
+				daftarProduk[idx].Kategori = kategoriList[pilihanKategori-1]
+			}
+		case 3:
+			fmt.Print("Stok baru: ")
+			fmt.Scan(&daftarProduk[idx].Stok)
+		case 4:
+			fmt.Print("Umur simpan baru: ")
+			fmt.Scan(&daftarStorage[idx].UmurSimpanHari)
+		case 5:
+			TampilkanPilihan("Rak", lokasiRakList)
+			var pilihanRak int
+			fmt.Scan(&pilihanRak)
+			if pilihanRak >= 1 && pilihanRak <= 10 {
+				daftarStorage[idx].LokasiRak = lokasiRakList[pilihanRak-1]
+			}
+		case 6:
+			fmt.Print("Tanggal masuk baru (DD-MM-YYYY): ")
+			fmt.Scan(&daftarStorage[idx].TanggalMasuk)
+		case 7:
+			fmt.Print("Nama pemasok baru: ")
+			fmt.Scan(&daftarPemasok[idx].Nama)
+		case 8:
+			fmt.Print("Kontak pemasok baru: ")
+			fmt.Scan(&daftarPemasok[idx].Kontak)
+		case 9:
+			fmt.Print("Alamat pemasok baru: ")
+			fmt.Scan(&daftarPemasok[idx].Alamat)
+		case 0:
+			fmt.Println("Edit selesai.")
+			logMasuk[jumlahLog] = fmt.Sprintf("Edit produk %s (%s)", daftarProduk[idx].Nama, id)
 			jumlahLog++
+			return
+		default:
+			fmt.Println("Pilihan tidak valid.")
 		}
 	}
-	fmt.Println(">> Data dummy sebanyak", jumlahProduk, "produk berhasil dimuat.")
 }
 
 func HapusProduk() {
@@ -317,30 +421,136 @@ func HapusProduk() {
 	}
 	for i := idx; i < jumlahProduk-1; i++ {
 		daftarProduk[i] = daftarProduk[i+1]
-		tanggalMasukList[i] = tanggalMasukList[i+1]
-		namaProdukList[i] = namaProdukList[i+1]
+		daftarStorage[i] = daftarStorage[i+1]
 	}
 	jumlahProduk--
+	logMasuk[jumlahLog] = fmt.Sprintf("Hapus produk %s (%s)", id, id)
+	jumlahLog++
 	fmt.Println("Produk berhasil dihapus.")
+}
+
+func IsiDataDummy() {
+	for i := 1; i <= 40; i++ {
+		p := Produk{
+			ID:       fmt.Sprintf("P%03d", i),
+			Nama:     fmt.Sprintf("Produk%02d", i),
+			Kategori: kategoriList[i%len(kategoriList)],
+			Stok:     10 + i,
+		}
+		s := Storage{
+			LokasiRak:      lokasiRakList[i%len(lokasiRakList)],
+			UmurSimpanHari: 5 + (i % 10),
+			TanggalMasuk:   fmt.Sprintf("%02d-06-2025", (i%30)+1),
+		}
+		ps := Pemasok{
+			Nama:   fmt.Sprintf("Pemasok%02d", (i%10)+1),
+			Kontak: fmt.Sprintf("081234567%02d", i),
+			Alamat: fmt.Sprintf("Jalan Pemasok No.%d", i),
+		}
+
+		daftarProduk[jumlahProduk] = p
+		daftarStorage[jumlahProduk] = s
+		daftarPemasok[jumlahProduk] = ps
+
+		logMasuk[jumlahLog] = fmt.Sprintf("Tambah produk %s (%s)", p.Nama, p.ID)
+		jumlahLog++
+		jumlahProduk++
+	}
+	fmt.Println("40 produk dummy beserta pemasok berhasil dimuat.")
+}
+
+func CariProdukByPemasok() {
+	var namaPemasok string
+	fmt.Print("Masukkan nama pemasok: ")
+	fmt.Scan(&namaPemasok)
+
+	ditemukan := false
+	for i := 0; i < jumlahProduk; i++ {
+		if daftarPemasok[i].Nama == namaPemasok {
+			TampilkanProduk(i)
+			ditemukan = true
+		}
+	}
+	if !ditemukan {
+		fmt.Println("Tidak ada produk dari pemasok tersebut.")
+	}
+}
+
+func CariProdukByKategori() {
+	TampilkanPilihan("Kategori", kategoriList)
+	var pilihan int
+	fmt.Print("Pilih kategori: ")
+	fmt.Scan(&pilihan)
+	if pilihan < 1 || pilihan > len(kategoriList) {
+		fmt.Println("Kategori tidak valid.")
+		return
+	}
+	kategori := kategoriList[pilihan-1]
+	ditemukan := false
+	for i := 0; i < jumlahProduk; i++ {
+		if daftarProduk[i].Kategori == kategori {
+			TampilkanProduk(i)
+			ditemukan = true
+		}
+	}
+	if !ditemukan {
+		fmt.Println("Tidak ada produk dalam kategori ini.")
+	}
+}
+
+func CariProdukByTanggalMasuk() {
+	var tanggal string
+	fmt.Print("Masukkan tanggal masuk (DD-MM-YYYY): ")
+	fmt.Scan(&tanggal)
+
+	ditemukan := false
+	for i := 0; i < jumlahProduk; i++ {
+		if daftarStorage[i].TanggalMasuk == tanggal {
+			TampilkanProduk(i)
+			ditemukan = true
+		}
+	}
+	if !ditemukan {
+		fmt.Println("Tidak ada produk dengan tanggal masuk tersebut.")
+	}
+}
+
+func CariProdukByLokasiRak() {
+	TampilkanPilihan("Rak Penyimpanan", lokasiRakList)
+	var pilihan int
+	fmt.Print("Pilih rak: ")
+	fmt.Scan(&pilihan)
+	if pilihan < 1 || pilihan > len(lokasiRakList) {
+		fmt.Println("Lokasi rak tidak valid.")
+		return
+	}
+	rak := lokasiRakList[pilihan-1]
+	ditemukan := false
+	for i := 0; i < jumlahProduk; i++ {
+		if daftarStorage[i].LokasiRak == rak {
+			TampilkanProduk(i)
+			ditemukan = true
+		}
+	}
+	if !ditemukan {
+		fmt.Println("Tidak ada produk di rak tersebut.")
+	}
 }
 
 func main() {
 	var pilihan int
-	for pilihan != 13 {
+	for pilihan != 16 {
 		fmt.Println("\n--- Menu Gudang FreshMart ---")
 		fmt.Println("1. Tambah Produk")
 		fmt.Println("2. Tampilkan Semua Produk")
-		fmt.Println("3. Cari Produk by ID")
-		fmt.Println("4. Cari Produk by Nama (Binary Search)")
-		fmt.Println("5. Cari Produk by Awalan Nama (Binary Prefix Search)")
-		fmt.Println("6. Urutkan berdasarkan Umur Simpan")
-		fmt.Println("7. Urutkan berdasarkan Kategori")
-		fmt.Println("8. Lihat Log Transaksi")
-		fmt.Println("9. Edit Stok Produk")
-		fmt.Println("10. Hapus Produk")
-		fmt.Println("11. Edit ID/Nama/Kategori Produk")
-		fmt.Println("12. Muat Data Dummy (40 produk)")
-		fmt.Println("13. Keluar")
+		fmt.Println("3. Menu Search")
+		fmt.Println("4. Urutkan Umur Simpan")
+		fmt.Println("5. Urutkan Kategori")
+		fmt.Println("6. Cetak Log")
+		fmt.Println("7. Edit Produk")
+		fmt.Println("8. Hapus Produk")
+		fmt.Println("9. Muat Data Dummy (40 Produk)")
+		fmt.Println("10. Keluar")
 		fmt.Print("Pilih menu: ")
 		fmt.Scan(&pilihan)
 
@@ -348,67 +558,64 @@ func main() {
 		case 1:
 			TambahProduk()
 		case 2:
-			TampilkanProduk()
-		case 3:
-			var id string
-			fmt.Print("Masukkan ID: ")
-			fmt.Scan(&id)
-			idx := SeqSearchCariProdukByID(id)
-			if idx != -1 {
-				fmt.Println("Ditemukan:", daftarProduk[idx])
+			if jumlahProduk == 0 {
+				fmt.Println("Belum ada produk yang tersedia di gudang.")
 			} else {
-				fmt.Println("Produk tidak ditemukan.")
-			}
-		case 4:
-			InsertionSortByNama(true)
-			var nama string
-			fmt.Print("Masukkan Nama Produk: ")
-			fmt.Scan(&nama)
-			idx := BinarySearchByNama(nama)
-			if idx != -1 {
-				fmt.Println("Ditemukan:", daftarProduk[idx])
-			} else {
-				fmt.Println("Produk tidak ditemukan.")
-			}
-		case 5:
-			InsertionSortByNama(true)
-			fmt.Print("Masukkan awalan nama produk: ")
-			var prefix string
-			fmt.Scan(&prefix)
-			hasil := BinarySearchByPrefixNama(prefix)
-			if len(hasil) == 0 {
-				fmt.Println("Tidak ditemukan produk dengan prefix tersebut.")
-			} else {
-				fmt.Println("Ditemukan:")
-				for i, p := range hasil {
-					fmt.Printf("%d. [%s] %s - %s | Stok: %d | Umur Simpan: %d hari | Rak: %s | Masuk: %s\n",
-						i+1, p.ID, p.Nama, p.Kategori, p.Stok, p.UmurSimpanHari, p.LokasiRak, p.TanggalMasuk)
+				for i := 0; i < jumlahProduk; i++ {
+					TampilkanProduk(i)
 				}
 			}
-		case 6:
-			var asc int
-			fmt.Print("1. Ascending, 2. Descending: ")
-			fmt.Scan(&asc)
-			SelectionSortUrutkanByUmurSimpan(asc == 1)
-			fmt.Println("Berhasil diurutkan.")
-		case 7:
-			var asc int
-			fmt.Print("1. Ascending, 2. Descending: ")
-			fmt.Scan(&asc)
-			InsertionSortUrutkanByKategori(asc == 1)
-			fmt.Println("Berhasil diurutkan.")
-		case 8:
+		case 3:
+			MenuPencarian()
+		case 4:
+			fmt.Println("\n--- Menu Pengurutan Produk ---")
+			fmt.Println("1. Berdasarkan ID")
+			fmt.Println("2. Berdasarkan Nama Produk")
+			fmt.Println("3. Berdasarkan Kategori")
+			fmt.Println("4. Berdasarkan Lokasi Rak")
+			fmt.Println("5. Berdasarkan Umur Simpan")
+			fmt.Println("6. Berdasarkan Tanggal Masuk")
+			fmt.Print("Pilih metode pengurutan: ")
+			var metode int
+			fmt.Scan(&metode)
+			fmt.Print("1 = Ascending, 2 = Descending: ")
+			var arah int
+			fmt.Scan(&arah)
+			asc := arah == 1
+
+			switch metode {
+			case 1:
+				InsertionSortByID(asc)
+				fmt.Println("Produk diurutkan berdasarkan ID.")
+			case 2:
+				InsertionSortByNama(asc)
+				fmt.Println("Produk diurutkan berdasarkan Nama.")
+			case 3:
+				InsertionSortByKategori(asc)
+				fmt.Println("Produk diurutkan berdasarkan Kategori.")
+			case 4:
+				InsertionSortByRak(asc)
+				fmt.Println("Produk diurutkan berdasarkan Lokasi Rak.")
+			case 5:
+				SelectionSortByUmur(asc)
+				fmt.Println("Produk diurutkan berdasarkan Umur Simpan.")
+			case 6:
+				InsertionSortByTanggalMasuk(asc)
+				fmt.Println("Produk diurutkan berdasarkan Tanggal Masuk.")
+			default:
+				fmt.Println("Pilihan tidak valid.")
+			}
+
+		case 5:
 			CetakLog()
-		case 9:
-			EditStokProduk()
-		case 10:
+		case 6:
+			EditProduk()
+		case 7:
 			HapusProduk()
-		case 11:
-			EditDataProduk()
-		case 12:
+		case 8:
 			IsiDataDummy()
-		case 13:
-			fmt.Println("Terima kasih! Program selesai.")
+		case 9:
+			fmt.Println("Terima kasih telah menggunakan sistem.")
 		default:
 			fmt.Println("Pilihan tidak valid.")
 		}
