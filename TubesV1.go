@@ -138,24 +138,17 @@ func BinarySearchByPrefixNama(prefix string) []Produk {
 		return hasil
 	}
 	i := tengah
-	for i >= 0 {
-		nama := daftarProduk[i].Nama
-		if len(nama) >= len(prefix) && nama[:len(prefix)] == prefix {
-			i--
-		} else {
-			i++
-			break
-		}
+	for i >= 0 && len(daftarProduk[i].Nama) >= len(prefix) &&
+		daftarProduk[i].Nama[:len(prefix)] == prefix {
+		i--
 	}
-	for i < jumlahProduk {
-		nama := daftarProduk[i].Nama
-		if len(nama) >= len(prefix) && nama[:len(prefix)] == prefix {
-			hasil = append(hasil, daftarProduk[i])
-			i++
-		} else {
-			i = jumlahProduk
-		}
+	i++
+	for i < jumlahProduk && len(daftarProduk[i].Nama) >= len(prefix) &&
+		daftarProduk[i].Nama[:len(prefix)] == prefix {
+		hasil = append(hasil, daftarProduk[i])
+		i++
 	}
+
 	return hasil
 }
 
@@ -301,9 +294,6 @@ func IsiDataDummy() {
 		{"P040", "Permen_Karet", "Snack", 200, 365, "E2", "21-06-2025"},
 	}
 	for _, p := range data {
-		if jumlahProduk >= MAX {
-			break
-		}
 		daftarProduk[jumlahProduk] = p
 		tanggalMasukList[jumlahProduk] = p.TanggalMasuk
 		namaProdukList[jumlahProduk] = p.Nama
