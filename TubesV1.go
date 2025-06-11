@@ -119,12 +119,12 @@ func MenuPencarian() {
 		fmt.Println("1. Cari by ID (Sequential Search)")
 		fmt.Println("2. Cari by Nama (Binary Search)")
 		fmt.Println("3. Cari by Prefix Nama (Binary Search)")
-		fmt.Println("4. Cari by Nama Pemasok")
-		fmt.Println("5. Cari by Kategori")
-		fmt.Println("6. Cari by Tanggal Masuk")
-		fmt.Println("7. Cari by Lokasi Rak")
-		fmt.Println("8. Kembali ke Menu Utama")
-		fmt.Print("Pilih jenis pencarian: ")
+		fmt.Println("4. Cari by Nama Pemasok (Sequential Search)")
+		fmt.Println("5. Cari by Kategori (Sequential Search)")
+		fmt.Println("6. Cari by Tanggal Masuk (Sequential Search)")
+		fmt.Println("7. Cari by Lokasi Rak (Sequential Search)")
+		fmt.Println("8. Kembali ke Menu Utama (Sequential Search)")
+		fmt.Print("Pilih jenis pencarian: (Sequential Search)")
 		fmt.Scan(&pilihan)
 
 		switch pilihan {
@@ -160,13 +160,13 @@ func MenuPencarian() {
 				}
 			}
 		case 4:
-			CariProdukByPemasok()
+			SeqSearchCariProdukByPemasok()
 		case 5:
-			CariProdukByKategori()
+			SeqSearchCariProdukByKategori()
 		case 6:
-			CariProdukByTanggalMasuk()
+			SeqSearchCariProdukByTanggalMasuk()
 		case 7:
-			CariProdukByLokasiRak()
+			SeqSearchCariProdukByLokasiRak()
 		case 8:
 			fmt.Println("Kembali ke menu utama...")
 		default:
@@ -184,18 +184,81 @@ func SeqSearchCariProdukByID(id string) int {
 	return -1
 }
 
-func InsertionSortByNama(asc bool) {
-	for i := 1; i < jumlahProduk; i++ {
-		keyP := daftarProduk[i]
-		keyS := daftarStorage[i]
-		j := i - 1
-		for j >= 0 && ((asc && daftarProduk[j].Nama > keyP.Nama) || (!asc && daftarProduk[j].Nama < keyP.Nama)) {
-			daftarProduk[j+1] = daftarProduk[j]
-			daftarStorage[j+1] = daftarStorage[j]
-			j--
+func SeqSearchCariProdukByPemasok() {
+	var namaPemasok string
+	fmt.Print("Masukkan nama pemasok: ")
+	fmt.Scan(&namaPemasok)
+
+	ditemukan := false
+	for i := 0; i < jumlahProduk; i++ {
+		if daftarPemasok[i].Nama == namaPemasok {
+			TampilkanProduk(i)
+			ditemukan = true
 		}
-		daftarProduk[j+1] = keyP
-		daftarStorage[j+1] = keyS
+	}
+	if !ditemukan {
+		fmt.Println("Tidak ada produk dari pemasok tersebut.")
+	}
+}
+
+func SeqSearchCariProdukByKategori() {
+	TampilkanPilihan("Kategori", kategoriList)
+	var pilihan int
+	fmt.Print("Pilih kategori: ")
+	fmt.Scan(&pilihan)
+	if pilihan < 1 || pilihan > len(kategoriList) {
+		fmt.Println("Kategori tidak valid.")
+		return
+	}
+	kategori := kategoriList[pilihan-1]
+	ditemukan := false
+	for i := 0; i < jumlahProduk; i++ {
+		if daftarProduk[i].Kategori == kategori {
+			TampilkanProduk(i)
+			ditemukan = true
+		}
+	}
+	if !ditemukan {
+		fmt.Println("Tidak ada produk dalam kategori ini.")
+	}
+}
+
+func SeqSearchCariProdukByTanggalMasuk() {
+	var tanggal string
+	fmt.Print("Masukkan tanggal masuk (DD-MM-YYYY): ")
+	fmt.Scan(&tanggal)
+
+	ditemukan := false
+	for i := 0; i < jumlahProduk; i++ {
+		if daftarStorage[i].TanggalMasuk == tanggal {
+			TampilkanProduk(i)
+			ditemukan = true
+		}
+	}
+	if !ditemukan {
+		fmt.Println("Tidak ada produk dengan tanggal masuk tersebut.")
+	}
+}
+
+func SeqSearchCariProdukByLokasiRak() {
+	TampilkanPilihan("Rak Penyimpanan", lokasiRakList)
+	var pilihan int
+	fmt.Print("Pilih rak: ")
+	fmt.Scan(&pilihan)
+	if pilihan < 1 || pilihan > len(lokasiRakList) {
+		fmt.Println("Lokasi rak tidak valid.")
+		return
+	}
+	rak := lokasiRakList[pilihan-1]
+	ditemukan := false
+	for i := 0; i < jumlahProduk; i++ {
+		if daftarStorage[i].LokasiRak == rak {
+			TampilkanProduk(i)
+			ditemukan = true
+		}
+	}
+	if !ditemukan {
+		fmt.Println("Tidak ada produk di rak tersebut.")
 	}
 }
 
@@ -261,6 +324,21 @@ func SelectionSortByUmur(asc bool) {
 	}
 }
 
+func InsertionSortByNama(asc bool) {
+	for i := 1; i < jumlahProduk; i++ {
+		keyP := daftarProduk[i]
+		keyS := daftarStorage[i]
+		j := i - 1
+		for j >= 0 && ((asc && daftarProduk[j].Nama > keyP.Nama) || (!asc && daftarProduk[j].Nama < keyP.Nama)) {
+			daftarProduk[j+1] = daftarProduk[j]
+			daftarStorage[j+1] = daftarStorage[j]
+			j--
+		}
+		daftarProduk[j+1] = keyP
+		daftarStorage[j+1] = keyS
+	}
+}
+
 func InsertionSortByKategori(asc bool) {
 	for i := 1; i < jumlahProduk; i++ {
 		keyP := daftarProduk[i]
@@ -275,6 +353,7 @@ func InsertionSortByKategori(asc bool) {
 		daftarStorage[j+1] = keyS
 	}
 }
+
 func InsertionSortByID(asc bool) {
 	for i := 1; i < jumlahProduk; i++ {
 		keyP := daftarProduk[i]
@@ -459,98 +538,19 @@ func IsiDataDummy() {
 	fmt.Println("40 produk dummy beserta pemasok berhasil dimuat.")
 }
 
-func CariProdukByPemasok() {
-	var namaPemasok string
-	fmt.Print("Masukkan nama pemasok: ")
-	fmt.Scan(&namaPemasok)
-
-	ditemukan := false
-	for i := 0; i < jumlahProduk; i++ {
-		if daftarPemasok[i].Nama == namaPemasok {
-			TampilkanProduk(i)
-			ditemukan = true
-		}
-	}
-	if !ditemukan {
-		fmt.Println("Tidak ada produk dari pemasok tersebut.")
-	}
-}
-
-func CariProdukByKategori() {
-	TampilkanPilihan("Kategori", kategoriList)
-	var pilihan int
-	fmt.Print("Pilih kategori: ")
-	fmt.Scan(&pilihan)
-	if pilihan < 1 || pilihan > len(kategoriList) {
-		fmt.Println("Kategori tidak valid.")
-		return
-	}
-	kategori := kategoriList[pilihan-1]
-	ditemukan := false
-	for i := 0; i < jumlahProduk; i++ {
-		if daftarProduk[i].Kategori == kategori {
-			TampilkanProduk(i)
-			ditemukan = true
-		}
-	}
-	if !ditemukan {
-		fmt.Println("Tidak ada produk dalam kategori ini.")
-	}
-}
-
-func CariProdukByTanggalMasuk() {
-	var tanggal string
-	fmt.Print("Masukkan tanggal masuk (DD-MM-YYYY): ")
-	fmt.Scan(&tanggal)
-
-	ditemukan := false
-	for i := 0; i < jumlahProduk; i++ {
-		if daftarStorage[i].TanggalMasuk == tanggal {
-			TampilkanProduk(i)
-			ditemukan = true
-		}
-	}
-	if !ditemukan {
-		fmt.Println("Tidak ada produk dengan tanggal masuk tersebut.")
-	}
-}
-
-func CariProdukByLokasiRak() {
-	TampilkanPilihan("Rak Penyimpanan", lokasiRakList)
-	var pilihan int
-	fmt.Print("Pilih rak: ")
-	fmt.Scan(&pilihan)
-	if pilihan < 1 || pilihan > len(lokasiRakList) {
-		fmt.Println("Lokasi rak tidak valid.")
-		return
-	}
-	rak := lokasiRakList[pilihan-1]
-	ditemukan := false
-	for i := 0; i < jumlahProduk; i++ {
-		if daftarStorage[i].LokasiRak == rak {
-			TampilkanProduk(i)
-			ditemukan = true
-		}
-	}
-	if !ditemukan {
-		fmt.Println("Tidak ada produk di rak tersebut.")
-	}
-}
-
 func main() {
 	var pilihan int
-	for pilihan != 16 {
+	for pilihan != 9 {
 		fmt.Println("\n--- Menu Gudang FreshMart ---")
 		fmt.Println("1. Tambah Produk")
 		fmt.Println("2. Tampilkan Semua Produk")
 		fmt.Println("3. Menu Search")
-		fmt.Println("4. Urutkan Umur Simpan")
-		fmt.Println("5. Urutkan Kategori")
-		fmt.Println("6. Cetak Log")
-		fmt.Println("7. Edit Produk")
-		fmt.Println("8. Hapus Produk")
-		fmt.Println("9. Muat Data Dummy (40 Produk)")
-		fmt.Println("10. Keluar")
+		fmt.Println("4. Menu Sort")
+		fmt.Println("5. Cetak Log")
+		fmt.Println("6. Edit Produk")
+		fmt.Println("7. Hapus Produk")
+		fmt.Println("8. Muat Data Dummy (40 Produk)")
+		fmt.Println("9. Keluar")
 		fmt.Print("Pilih menu: ")
 		fmt.Scan(&pilihan)
 
@@ -586,22 +586,22 @@ func main() {
 			switch metode {
 			case 1:
 				InsertionSortByID(asc)
-				fmt.Println("Produk diurutkan berdasarkan ID.")
+				fmt.Println("Produk diurutkan berdasarkan ID (Insertion Sort).")
 			case 2:
 				InsertionSortByNama(asc)
-				fmt.Println("Produk diurutkan berdasarkan Nama.")
+				fmt.Println("Produk diurutkan berdasarkan Nama (Insertion Sort).")
 			case 3:
 				InsertionSortByKategori(asc)
-				fmt.Println("Produk diurutkan berdasarkan Kategori.")
+				fmt.Println("Produk diurutkan berdasarkan Kategori (Insertion Sort).")
 			case 4:
 				InsertionSortByRak(asc)
-				fmt.Println("Produk diurutkan berdasarkan Lokasi Rak.")
+				fmt.Println("Produk diurutkan berdasarkan Lokasi Rak (Insertion Sort).")
 			case 5:
 				SelectionSortByUmur(asc)
-				fmt.Println("Produk diurutkan berdasarkan Umur Simpan.")
+				fmt.Println("Produk diurutkan berdasarkan Umur Simpan (Selection Sort).")
 			case 6:
 				InsertionSortByTanggalMasuk(asc)
-				fmt.Println("Produk diurutkan berdasarkan Tanggal Masuk.")
+				fmt.Println("Produk diurutkan berdasarkan Tanggal Masuk (Insertion Sort).")
 			default:
 				fmt.Println("Pilihan tidak valid.")
 			}
